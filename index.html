@@ -37,27 +37,34 @@
 </style>
 
 <head>
-  <title>Thumbnail Story</title>
+    <title>Thumbnail Story</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <span id="loader" style="font-family: Roboto;"></span>
     <div id="main">
         <br><br>
         <!-- <button id="btn" onclick="downloadScript()">Download</button> -->
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
         <script>
-
+        window.onload = function () {
             const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
             const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A';
             let latestVideoId; // Globale Variable
+            let latestVideoTitle;
 
             async function getLatestVideoId() {
             try {
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=id&order=date&type=video`);
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
                 const data = await response.json();
                 
                 latestVideoId = data.items[0].id.videoId;
+                latestVideoTitle = data.items[0].snippet.title;
+                console.log(latestVideoTitle);
             } catch (error) {
                 console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
                 // Handle error if needed
@@ -92,6 +99,29 @@
 
                     // Zeichne das zweite Bild auf das Canvas
                     ctx.drawImage(bild2, 0, 400, canvas.width, 608);
+                    
+                    document.getElementById("loader").style.display="none"
+                    ctx.font = '45px Roboto';
+                    ctx.fillStyle = "#ffffff";
+                    const txt = insertNewlineEveryXCharacters(latestVideoTitle, 25);
+                    const x = 100;
+                    const y = 1080;
+                    const lineheight = 45;
+                    const lines = txt.split('\n');
+                    for (let i = 0; i < lines.length; i++) {
+                        ctx.fillText(lines[i], x, y + (i * lineheight));
+                    }
+                }
+
+                function insertNewlineEveryXCharacters(inputString, x) {
+                    let result = '';
+                    for (let i = 0; i < inputString.length; i++) {
+                        result += inputString[i];
+                        if ((i + 1) >= x && inputString[i] == " ") {
+                            result += '\n';
+                        }
+                    }
+                    return result;
                 }
 
                 // Pfade zu den Bildern
@@ -105,6 +135,7 @@
                     });
                 });
             });
+        }
         </script>
     </div>
 </body>
