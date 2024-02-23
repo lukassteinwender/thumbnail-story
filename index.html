@@ -47,15 +47,21 @@
     <span id="loader" style="font-family: Roboto;"></span>
     <div id="main">
         <br><br>
-        <!-- <button id="btn" onclick="downloadScript()">Download</button> -->
+        <!-- <button id="btn" onclick="downloadCanvas()">Download</button> -->
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
+        <br> <br>
         <script>
+        let canvas = document.getElementById('Canvas');
+        let ctx = canvas.getContext('2d');
         window.onload = function () {
-            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
+            const apiKey = 'AIzaSyCaO9CyG-ufaVokcG-Yc8oXW0qWsgu-NK0';
             const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A';
             let latestVideoId; // Globale Variable
             let latestVideoTitle;
+            let profilePicURL;
+            let channelName;
+            let duration;
 
             async function getLatestVideoId() {
             try {
@@ -64,7 +70,19 @@
                 
                 latestVideoId = data.items[0].id.videoId;
                 latestVideoTitle = data.items[0].snippet.title;
-                console.log(latestVideoTitle);
+                const videoId = data.items[0].id.videoId;
+
+                const response2 = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
+                const data2 = await response2.json();
+
+                profilePicURL = data2.items[0].snippet.thumbnails.high.url;
+                channelName = data2.items[0].snippet.title;
+
+                const response3 = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${apiKey}`);
+                const data3 = await response3.json();
+
+                duration = data3.items[0].contentDetails.duration;
+
             } catch (error) {
                 console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
                 // Handle error if needed
@@ -78,11 +96,13 @@
                 var src = 'http://img.youtube.com/vi/'+youtube_video_id+'/maxresdefault.jpg';
                 video_thumbnail.src = src;
                 
-                var canvas = document.getElementById('Canvas');
-                var ctx = canvas.getContext('2d');
 
                 var bild1 = new Image();
                 var bild2 = new Image();
+                var bild3 = new Image();
+                bild1.crossOrigin = "anonymous";
+                bild2.crossOrigin = "anonymous";
+                bild3.crossOrigin = "anonymous";
                 // Funktion zum Laden eines Bildes
                 function ladeBild(src, callback) {
                     var bild = new Image();
@@ -93,31 +113,96 @@
                 }
 
                 // Funktion zum Kombinieren von zwei Bildern auf dem Canvas
-                function kombiniereBilder(bild1, bild2) {
+                function kombiniereBilder(bild1, bild2, bild3) {
                     // Zeichne das erste Bild auf das Canvas
                     ctx.drawImage(bild1, 0, 0, canvas.width, canvas.height);
 
                     // Zeichne das zweite Bild auf das Canvas
-                    ctx.drawImage(bild2, 0, 400, canvas.width, 608);
-                    
+                    ctx.drawImage(bild2, 0, 400, canvas.width, 608);    
+
+                    // ctx.drawImage(bild3, 30, 1040, 80, 80);
+
+                    var x_val = 30;
+                    var y_val = 1040;
+                    var width = 90;
+                    var height = 90;
+
                     document.getElementById("loader").style.display="none"
                     ctx.font = '45px Roboto';
                     ctx.fillStyle = "#ffffff";
-                    const txt = insertNewlineEveryXCharacters(latestVideoTitle, 25);
-                    const x = 100;
-                    const y = 1080;
-                    const lineheight = 45;
+                    const txt = insertNewlineEveryXCharacters(latestVideoTitle, 30);
+                    const x = 150;
+                    const y = 1085;
+                    var lelele = 0;
+                    const lineheight = 55;
                     const lines = txt.split('\n');
                     for (let i = 0; i < lines.length; i++) {
                         ctx.fillText(lines[i], x, y + (i * lineheight));
+                        lelele = y + (i * lineheight);
                     }
+                    ctx.font = '30px Roboto';
+                    ctx.fillStyle = "#b7b7b7";
+                    ctx.fillText(channelName, x, lelele + 40);
+
+                    function convertDuration(duration) {
+                        // Parse the ISO 8601 duration format
+                        const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+
+                        // Extract hours, minutes, and seconds
+                        const hours = (match[1] || 0) && parseInt(match[1]);
+                        const minutes = (match[2] || 0) && parseInt(match[2]);
+                        const seconds = (match[3] || 0) && parseInt(match[3]);
+
+                        // Format the duration as "mm:ss"
+                        const formattedDuration = [
+                            minutes ? String(minutes).padStart(2, '0') : '00',
+                            seconds ? String(seconds).padStart(2, '0') : '00',
+                        ].filter(Boolean).join(':');
+
+                        return formattedDuration;
+                    }
+
+                    cDur = convertDuration(duration);
+                    
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+
+                    // Draw a rounded rectangle
+                    roundRect(ctx, 950, 940, 110, 50, 10);
+
+                    // Function to draw a rounded rectangle
+                    function roundRect(ctx, x, y, width, height, radius) {
+                        ctx.beginPath();
+                        ctx.moveTo(x + radius, y);
+                        ctx.arcTo(x + width, y, x + width, y + height, radius);
+                        ctx.arcTo(x + width, y + height, x, y + height, radius);
+                        ctx.arcTo(x, y + height, x, y, radius);
+                        ctx.arcTo(x, y, x + width, y, radius);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    ctx.font = '35px Roboto';
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillText(cDur, 959, 978);
+                    ctx.beginPath();
+                    
+                    ctx.arc(x_val + width / 2, y_val + height / 2, width / 2, 0, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.clip();
+
+                    // Zeichne das Bild im inneren Bereich des Kreises
+                    ctx.drawImage(bild3, x_val , y_val, width, height);
+
+                    
                 }
 
                 function insertNewlineEveryXCharacters(inputString, x) {
                     let result = '';
+                    let e = 0;
                     for (let i = 0; i < inputString.length; i++) {
                         result += inputString[i];
-                        if ((i + 1) >= x && inputString[i] == " ") {
+                        e = e + 1
+                        if ((e + 1) >= x && inputString[i] == " ") {
+                            e = 0
                             result += '\n';
                         }
                     }
@@ -127,16 +212,21 @@
                 // Pfade zu den Bildern
                 var pfadBild1 = "background.jpg";
                 var pfadBild2 = src;
+                var pfadBild3 = profilePicURL;
+
 
                 // Lade die Bilder und kombiniere sie
                 ladeBild(pfadBild1, function(bild1) {
                     ladeBild(pfadBild2, function(bild2) {
-                    kombiniereBilder(bild1, bild2);
+                        ladeBild(pfadBild3, function(bild3) {
+                            kombiniereBilder(bild1, bild2, bild3);
+                        });
                     });
                 });
             });
         }
         </script>
+        <br> <br>
     </div>
 </body>
 
