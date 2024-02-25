@@ -55,9 +55,9 @@
         let canvas = document.getElementById('Canvas');
         let ctx = canvas.getContext('2d');
         window.onload = function () {
-            const apiKey = 'AIzaSyCaO9CyG-ufaVokcG-Yc8oXW0qWsgu-NK0';
-            const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A';
-            let latestVideoId; // Globale Variable
+            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Youtube-API Key
+            const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A'; // Channel-ID for channel which is supposed to be displayed
+            let latestVideoId; 
             let latestVideoTitle;
             let profilePicURL;
             let channelName;
@@ -85,7 +85,6 @@
 
             } catch (error) {
                 console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
-                // Handle error if needed
             }
             }
 
