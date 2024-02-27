@@ -34,13 +34,89 @@
         }
                 
     }
+    .roboto-thin {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+    }
+
+    .roboto-thin-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: italic;
+    }
+
+    .roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    }
+
+    .roboto-light-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+    }
+
+    .roboto-regular {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+
+    .roboto-regular-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    }
+
+    .roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    }
+
+    .roboto-medium-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+    }
+
+    .roboto-bold {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    }
+
+    .roboto-bold-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    }
+
+    .roboto-black {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    }
+
+    .roboto-black-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    }
+    @font-face {
+            font-family: 'AppleColorEmoji';
+            src: local('Apple Color Emoji'), local('AppleColorEmoji'),
+                 url('https://rsms.me/inter/font-files/Inter-Regular.woff2') format('woff2');
+            unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+1F700-1F773, U+1F780-1F7FF, U+1F800-1F8FF, U+1F900-1F9FF;
+        }
+
 </style>
 
 <head>
     <title>Thumbnail Story</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 </head>
 
 <body>
@@ -51,17 +127,21 @@
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
         <br> <br>
+        <script src="https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js"></script>
         <script>
         let canvas = document.getElementById('Canvas');
         let ctx = canvas.getContext('2d');
         window.onload = function () {
-            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Youtube-API Key
+            var emojiHerz = emojione.toShort("❤️"); 
+            const apiKey = 'AIzaSyCaO9CyG-ufaVokcG-Yc8oXW0qWsgu-NK0'; // Youtube-API Key
             const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A'; // Channel-ID for channel which is supposed to be displayed
+            let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽"
             let latestVideoId; 
             let latestVideoTitle;
             let profilePicURL;
             let channelName;
             let duration;
+            
 
             async function getLatestVideoId() {
             try {
@@ -127,19 +207,19 @@
                     var height = 90;
 
                     document.getElementById("loader").style.display="none"
-                    ctx.font = '45px Roboto';
+                    ctx.font = '400 45px Roboto';
                     ctx.fillStyle = "#ffffff";
                     const txt = insertNewlineEveryXCharacters(latestVideoTitle, 30);
-                    const x = 150;
-                    const y = 1085;
+                    var x = 150;
+                    var y = 1085;
                     var lelele = 0;
-                    const lineheight = 55;
-                    const lines = txt.split('\n');
+                    var lineheight = 55;
+                    var lines = txt.split('\n');
                     for (let i = 0; i < lines.length; i++) {
                         ctx.fillText(lines[i], x, y + (i * lineheight));
                         lelele = y + (i * lineheight);
                     }
-                    ctx.font = '30px Roboto';
+                    ctx.font = '400 30px Roboto';
                     ctx.fillStyle = "#b7b7b7";
                     ctx.fillText(channelName, x, lelele + 40);
 
@@ -168,6 +248,9 @@
                     // Draw a rounded rectangle
                     roundRect(ctx, 950, 940, 110, 50, 10);
 
+                    x = 340;
+                    y = 1400;
+
                     // Function to draw a rounded rectangle
                     function roundRect(ctx, x, y, width, height, radius) {
                         ctx.beginPath();
@@ -179,10 +262,33 @@
                         ctx.closePath();
                         ctx.fill();
                     }
-                    ctx.font = '35px Roboto';
+                    ctx.font = '400 35px Roboto';
                     ctx.fillStyle = "#ffffff";
                     ctx.fillText(cDur, 961, 978);
                     ctx.beginPath();
+
+                    x = 540;
+                    y = 1300;
+                    var fontsize = 40;
+                    var fontface = 'Roboto';
+                    var lineHeight = fontsize * 1.286;
+                    var textWidth = 0;
+
+                    const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
+                    gradient.addColorStop(0, "#43CBFF");
+                    gradient.addColorStop(1, "#9708CC");
+
+                    ctx.font = 'bold 40px "Roboto", sans-serif';
+                    ctx.textAlign = "center";
+
+                    lines = adText.split('\n');
+                    for (let i = 0; i < lines.length; i++) {
+                        textWidth = ctx.measureText(lines[i]).width;
+                        ctx.fillStyle = gradient;
+                        roundRect(ctx, x - 10 - textWidth/2, y + (i * lineHeight) - lineHeight + 9, textWidth+20, lineHeight+6, 10);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillText(lines[i], x, y + (i * lineHeight));
+                    }
                     
                     ctx.arc(x_val + width / 2, y_val + height / 2, width / 2, 0, 2 * Math.PI);
                     ctx.closePath();
