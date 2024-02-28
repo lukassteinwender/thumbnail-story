@@ -105,18 +105,12 @@
     font-weight: 900;
     font-style: italic;
     }
-    @font-face {
-            font-family: 'AppleColorEmoji';
-            src: local('Apple Color Emoji'), local('AppleColorEmoji'),
-                 url('https://rsms.me/inter/font-files/Inter-Regular.woff2') format('woff2');
-            unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+1F700-1F773, U+1F780-1F7FF, U+1F800-1F8FF, U+1F900-1F9FF;
-        }
 
 </style>
 
 <head>
     <title>Thumbnail Story</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://corsproxy.io/?https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 </head>
 
 <body>
@@ -127,13 +121,11 @@
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
         <br> <br>
-        <script src="https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js"></script>
         <script>
         let canvas = document.getElementById('Canvas');
         let ctx = canvas.getContext('2d');
         window.onload = function () {
-            var emojiHerz = emojione.toShort("❤️"); 
-            const apiKey = 'AIzaSyCaO9CyG-ufaVokcG-Yc8oXW0qWsgu-NK0'; // Youtube-API Key
+            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Youtube-API Key
             const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A'; // Channel-ID for channel which is supposed to be displayed
             let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽"
             let latestVideoId; 
@@ -145,20 +137,20 @@
 
             async function getLatestVideoId() {
             try {
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
+                const response = await fetch(`https://corsproxy.io/?https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
                 const data = await response.json();
                 
                 latestVideoId = data.items[0].id.videoId;
                 latestVideoTitle = data.items[0].snippet.title;
                 const videoId = data.items[0].id.videoId;
 
-                const response2 = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
+                const response2 = await fetch(`https://corsproxy.io/?https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
                 const data2 = await response2.json();
 
                 profilePicURL = data2.items[0].snippet.thumbnails.high.url;
                 channelName = data2.items[0].snippet.title;
 
-                const response3 = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${apiKey}`);
+                const response3 = await fetch(`https://corsproxy.io/?https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${apiKey}`);
                 const data3 = await response3.json();
 
                 duration = data3.items[0].contentDetails.duration;
@@ -172,7 +164,10 @@
             getLatestVideoId().then(() => {
                 var youtube_video_id = latestVideoId;
                 var video_thumbnail = document.createElement("IMG");
-                var src = 'http://img.youtube.com/vi/'+youtube_video_id+'/maxresdefault.jpg';
+                var corsAnywhereUrl = 'https://corsproxy.io/?';
+                var src = corsAnywhereUrl + encodeURIComponent('https://img.youtube.com/vi/' + youtube_video_id + '/maxresdefault.jpg');
+                var video_thumbnail = new Image();
+                video_thumbnail.crossOrigin = 'anonymous';
                 video_thumbnail.src = src;
                 
 
@@ -185,6 +180,7 @@
                 // Funktion zum Laden eines Bildes
                 function ladeBild(src, callback) {
                     var bild = new Image();
+                    bild.crossOrigin = "anonymous";
                     bild.onload = function() {
                     callback(bild);
                     };
@@ -317,14 +313,12 @@
                 // Pfade zu den Bildern
                 var pfadBild1 = "background.jpg";
                 var pfadBild2 = src;
-                var pfadBild3 = profilePicURL;
+                var pfadBild3 = corsAnywhereUrl + profilePicURL;
 
-
-                // Lade die Bilder und kombiniere sie
-                ladeBild(pfadBild1, function(bild1) {
-                    ladeBild(pfadBild2, function(bild2) {
-                        ladeBild(pfadBild3, function(bild3) {
-                            kombiniereBilder(bild1, bild2, bild3);
+                ladeBild(pfadBild1, function (bild1) {
+                    ladeBild(pfadBild2, function (bild2) {
+                        ladeBild(pfadBild3, function (bild3) {
+                            kombiniereBilder(bild1, video_thumbnail, bild3);
                         });
                     });
                 });
