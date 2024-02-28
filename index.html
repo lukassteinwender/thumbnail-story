@@ -123,7 +123,7 @@
     <span id="loader" style="font-family: Roboto;"></span>
     <div id="main">
         <br><br>
-        <!-- <button id="btn" onclick="downloadCanvas()">Download</button> -->
+        <button id="btn" onclick="downloadCanvas()">Download</button>
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
         <br> <br>
@@ -330,6 +330,28 @@
                 });
             });
         }
+        function downloadCanvas() {
+        // Get the canvas data as a data URL
+        var dataUrl = canvas.toDataURL('image/png');
+
+        // Create a link element
+        var link = document.createElement('a');
+
+        // Set the href attribute of the link to the data URL
+        link.href = dataUrl;
+
+        // Set the download attribute of the link to specify the filename
+        link.download = 'thumbnail.png';
+
+        // Append the link to the document
+        document.body.appendChild(link);
+
+        // Trigger a click on the link to start the download
+        link.click();
+
+        // Remove the link from the document
+        document.body.removeChild(link);
+    }
         </script>
         <br> <br>
     </div>
