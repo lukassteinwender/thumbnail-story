@@ -3,7 +3,7 @@
 *Note: The github.io-Website is only an example. Please host it on your own, to use it for your channel.*
 
 <h3>Usage:</h3>
-1. Change the channel-ID, adText and insert your YouTube-API-Key in the index.html
+1. Change the channel-ID, adText and insert your YouTube-API-Key in the index.html<br>
 2. Run the index.html
 
 
