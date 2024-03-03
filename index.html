@@ -118,12 +118,17 @@
     <div id="main">
         <br><br>
         <button id="btn" onclick="downloadCanvas()"><b><h1>Download</h1></b></button>
+        <button id="btn" onclick="copyLink()"><b><h1>Copy Video-URL</h1></b></button>
         <br> <br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
         <br> <br>
+        <div id="link">
+            <p style='color:white;'></p>
+        </div>
         <script>
         let canvas = document.getElementById('Canvas');
         let ctx = canvas.getContext('2d');
+        let videoSrc = "";
         window.onload = function () {
             const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Youtube-API Key
             const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A'; // Channel-ID for channel which is supposed to be displayed
@@ -132,8 +137,7 @@
             let latestVideoTitle;
             let profilePicURL;
             let channelName;
-            let duration;
-            
+            let duration;  
 
             async function getLatestVideoId() {
             try {
@@ -165,6 +169,13 @@
                 var youtube_video_id = latestVideoId;
                 var video_thumbnail = document.createElement("IMG");
                 var corsAnywhereUrl = 'https://corsproxy.io/?';
+                videoSrc = 'https://youtube.com/watch?v=' + youtube_video_id;
+                var div = document.getElementById('link');
+                var p = document.createElement('p');
+                p.style.color = 'white';
+                p.style.fontFamily = 'Roboto';
+                p.textContent = videoSrc;
+                div.appendChild(p);
                 var src = corsAnywhereUrl + encodeURIComponent('https://img.youtube.com/vi/' + youtube_video_id + '/maxresdefault.jpg');
                 var video_thumbnail = new Image();
                 video_thumbnail.crossOrigin = 'anonymous';
@@ -323,29 +334,32 @@
                     });
                 });
             });
+        };
+        function copyLink() {
+            navigator.clipboard.writeText(videoSrc);
         }
         function downloadCanvas() {
-        // Get the canvas data as a data URL
-        var dataUrl = canvas.toDataURL('image/png');
+            // Get the canvas data as a data URL
+            var dataUrl = canvas.toDataURL('image/png');
 
-        // Create a link element
-        var link = document.createElement('a');
+            // Create a link element
+            var link = document.createElement('a');
 
-        // Set the href attribute of the link to the data URL
-        link.href = dataUrl;
+            // Set the href attribute of the link to the data URL
+            link.href = dataUrl;
 
-        // Set the download attribute of the link to specify the filename
-        link.download = 'thumbnail.png';
+            // Set the download attribute of the link to specify the filename
+            link.download = 'thumbnail.png';
 
-        // Append the link to the document
-        document.body.appendChild(link);
+            // Append the link to the document
+            document.body.appendChild(link);
 
-        // Trigger a click on the link to start the download
-        link.click();
+            // Trigger a click on the link to start the download
+            link.click();
 
-        // Remove the link from the document
-        document.body.removeChild(link);
-    }
+            // Remove the link from the document
+            document.body.removeChild(link);
+        }
         </script>
         <br> <br>
     </div>
