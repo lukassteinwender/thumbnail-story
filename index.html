@@ -280,10 +280,40 @@
                     var fontface = 'Roboto';
                     var lineHeight = fontsize * 1.286;
                     var textWidth = 0;
-
+                    var colorval = between(0,7);
                     const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
-                    gradient.addColorStop(0, "#43CBFF");
-                    gradient.addColorStop(1, "#9708CC");
+                    if (colorval == 0) {
+                        gradient.addColorStop(0, "#43CBFF");
+                        gradient.addColorStop(1, "#9708CC");
+                    }
+                    else if (colorval == 1) {
+                        gradient.addColorStop(0, "#FEB692");
+                        gradient.addColorStop(1, "#EA5455");
+                    }
+                    else if (colorval == 2) {
+                        gradient.addColorStop(0, "#CE9FFC");
+                        gradient.addColorStop(1, "#7367F0");
+                    }
+                    else if (colorval == 3) {
+                        gradient.addColorStop(0, "#81FBB8");
+                        gradient.addColorStop(1, "#28C76F");
+                    }
+                    else if (colorval == 4) {
+                        gradient.addColorStop(0, "#E2B0FF");
+                        gradient.addColorStop(1, "#9F44D3");
+                    }
+                    else if (colorval == 5) {
+                        gradient.addColorStop(0, "#F97794");
+                        gradient.addColorStop(1, "#623AA2");
+                    }
+                    else if (colorval == 6) {
+                        gradient.addColorStop(0, "#FCCF31");
+                        gradient.addColorStop(1, "#F55555");
+                    }
+                    else if (colorval == 7) {
+                        gradient.addColorStop(0, "#A0FE65");
+                        gradient.addColorStop(1, "#FA016D");
+                    }
 
                     ctx.font = 'bold 40px "Roboto", sans-serif';
                     ctx.textAlign = "center";
@@ -319,6 +349,12 @@
                         }
                     }
                     return result;
+                }
+
+                function between(min, max) {  
+                    return Math.floor(
+                        Math.random() * (max - min) + min
+                    )
                 }
 
                 // Pfade zu den Bildern
