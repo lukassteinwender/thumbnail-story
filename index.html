@@ -280,7 +280,7 @@
                     var fontface = 'Roboto';
                     var lineHeight = fontsize * 1.286;
                     var textWidth = 0;
-                    var colorval = between(0,7);
+                    var colorval = between(0,14);
                     const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
                     if (colorval == 0) {
                         gradient.addColorStop(0, "#43CBFF");
@@ -314,8 +314,36 @@
                         gradient.addColorStop(0, "#A0FE65");
                         gradient.addColorStop(1, "#FA016D");
                     }
+                    else if (colorval == 8) {
+                        gradient.addColorStop(0, "#2193b0");
+                        gradient.addColorStop(1, "#6dd5ed");
+                    }
+                    else if (colorval == 9) {
+                        gradient.addColorStop(0, "#cc2b5e");
+                        gradient.addColorStop(1, "#753a88");
+                    }
+                    else if (colorval == 10) {
+                        gradient.addColorStop(0, "#42275a");
+                        gradient.addColorStop(1, "#734b6d");
+                    }
+                    else if (colorval == 11) {
+                        gradient.addColorStop(0, "#56ab2f");
+                        gradient.addColorStop(1, "#a8e063");
+                    }
+                    else if (colorval == 12) {
+                        gradient.addColorStop(0, "#ff512f");
+                        gradient.addColorStop(1, "#dd2476");
+                    }
+                    else if (colorval == 13) {
+                        gradient.addColorStop(0, "#ffd89b");
+                        gradient.addColorStop(1, "#19547b");
+                    }
+                    else if (colorval == 14) {
+                        gradient.addColorStop(0, "#614385");
+                        gradient.addColorStop(1, "#516395");
+                    }
                     
-                    var fontVal = between(0, 5)
+                    var fontVal = between(0, 7)
                     if(fontVal == 0){
                         ctx.font = 'bold 40px "Roboto", sans-serif';
                     }
@@ -323,12 +351,18 @@
                         ctx.font = 'bold 40px "Brush Script MT", sans-serif';
                     }
                     else if(fontVal == 3){
-                        ctx.font = 'bold 40px "Copperplate", sans-serif';
+                        ctx.font = '40px "Copperplate", sans-serif';
                     }
                     else if(fontVal == 4){
                         ctx.font = 'bold 40px "Courier New", sans-serif';
                     }
                     else if(fontVal == 5){
+                        ctx.font = '40px "Brush Script MT", sans-serif';
+                    }
+                    else if(fontVal == 6){
+                        ctx.font = 'bold 40px "Comic Sans MS", sans-serif';
+                    }
+                    else if(fontVal == 7){
                         ctx.font = 'bold 40px "Lucida Handwriting", sans-serif';
                     }
                     ctx.textAlign = "center";
