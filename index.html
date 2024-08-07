@@ -314,8 +314,23 @@
                         gradient.addColorStop(0, "#A0FE65");
                         gradient.addColorStop(1, "#FA016D");
                     }
-
-                    ctx.font = 'bold 40px "Roboto", sans-serif';
+                    
+                    var fontVal = between(0, 5)
+                    if(fontVal == 0){
+                        ctx.font = 'bold 40px "Roboto", sans-serif';
+                    }
+                    else if(fontVal == 2){
+                        ctx.font = 'bold 40px "Brush Script MT", sans-serif';
+                    }
+                    else if(fontVal == 3){
+                        ctx.font = 'bold 40px "Copperplate", sans-serif';
+                    }
+                    else if(fontVal == 4){
+                        ctx.font = 'bold 40px "Courier New", sans-serif';
+                    }
+                    else if(fontVal == 5){
+                        ctx.font = 'bold 40px "Lucida Handwriting", sans-serif';
+                    }
                     ctx.textAlign = "center";
 
                     lines = adText.split('\n');
