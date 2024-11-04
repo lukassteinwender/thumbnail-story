@@ -3,7 +3,7 @@
 
 <style>
     body {
-        background-color: #282b30;
+        background-color:	#282b30;
     }
 
     #main {
@@ -15,6 +15,7 @@
     }
 
     #btn {
+        
         border: 0;
         outline: 0;
         cursor: pointer;
@@ -27,22 +28,82 @@
         padding: 15px 30px;
         display: inline-block;
         min-height: 28px;
-        transition: background-color .24s, box-shadow .24s;
+        transition: background-color .24s,box-shadow .24s;
+        :hover {
+            box-shadow: rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(0 0 0 / 12%) 0px 1px 1px 0px, rgb(84 105 212) 0px 0px 0px 1px, rgb(0 0 0 / 0%) 0px 0px 0px 0px, rgb(60 66 87 / 8%) 0px 3px 9px 0px, rgb(60 66 87 / 8%) 0px 2px 5px 0px;
+        }
+                
+    }
+    .roboto-thin {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: normal;
     }
 
-    .circle-btn {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: inline-block;
-        margin: 10px;
-        overflow: hidden;
-        border: 3px solid #fff;
+    .roboto-thin-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: italic;
     }
 
-    #canvas-container {
-        position: relative;
+    .roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    }
+
+    .roboto-light-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+    }
+
+    .roboto-regular {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+
+    .roboto-regular-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    }
+
+    .roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    }
+
+    .roboto-medium-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+    }
+
+    .roboto-bold {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    }
+
+    .roboto-bold-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    }
+
+    .roboto-black {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    }
+
+    .roboto-black-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: italic;
     }
 
 </style>
@@ -53,180 +114,339 @@
 </head>
 
 <body>
-    <span id="loader" style="font-family: Roboto; color: white;"></span>
+    <span id="loader" style="font-family: Roboto;"></span>
     <div id="main">
-        <div id="canvas-container">
-            <!-- Buttons for selecting channels -->
-            <div class="circle-btn" id="epicstunBtn" onclick="loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun')">
-                <img src="epicstun_profile.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('Dreemtum_Channel_ID', 'Dreemtum')">
-                <img src="dreemtum_profile.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <br><br>
-            <canvas id="Canvas" width="1080" height="1920"></canvas>
-        </div>
-
         <br><br>
         <button id="btn" onclick="downloadCanvas()"><b><h1>Download</h1></b></button>
         <button id="btn" onclick="copyLink()"><b><h1>Copy Video-URL</h1></b></button>
-
+        <br> <br>
+        <canvas id="Canvas" width="1080" height="1920"></canvas>
         <br> <br>
         <div id="link">
             <p style='color:white;'></p>
         </div>
-
         <script>
-            let canvas = document.getElementById('Canvas');
-            let ctx = canvas.getContext('2d');
-            let videoSrc = "";
-            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
+        let canvas = document.getElementById('Canvas');
+        let ctx = canvas.getContext('2d');
+        let videoSrc = "";
+        window.onload = function () {
+            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Youtube-API Key
+            const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A'; // Channel-ID for channel which is supposed to be displayed
+            let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽"
+            let latestVideoId; 
+            let latestVideoTitle;
+            let profilePicURL;
+            let channelName;
+            let duration;  
 
-            window.onload = function() {
-                loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun');
-            };
+            async function getLatestVideoId() {
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
+                const data = await response.json();
+                
+                latestVideoId = data.items[0].id.videoId;
+                latestVideoTitle = data.items[0].snippet.title;
+                const videoId = data.items[0].id.videoId;
 
-            async function loadChannelData(channelId, channelName) {
-                document.getElementById("loader").innerText = `Lade Daten für ${channelName}...`;
+                const response2 = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
+                const data2 = await response2.json();
 
-                try {
-                    const videoResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
-                    const videoData = await videoResponse.json();
-                    const latestVideoId = videoData.items[0].id.videoId;
-                    const latestVideoTitle = videoData.items[0].snippet.title;
+                profilePicURL = data2.items[0].snippet.thumbnails.high.url;
+                channelName = data2.items[0].snippet.title;
 
-                    const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
-                    const channelData = await channelResponse.json();
-                    const profilePicURL = channelData.items[0].snippet.thumbnails.high.url;
+                const response3 = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${apiKey}`);
+                const data3 = await response3.json();
 
-                    const videoDetailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${latestVideoId}&key=${apiKey}`);
-                    const videoDetailsData = await videoDetailsResponse.json();
-                    const duration = videoDetailsData.items[0].contentDetails.duration;
+                duration = data3.items[0].contentDetails.duration;
 
-                    videoSrc = 'https://youtube.com/watch?v=' + latestVideoId;
-                    document.getElementById("loader").innerText = '';
-
-                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId);
-
-                } catch (error) {
-                    console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
-                    document.getElementById("loader").innerText = `Fehler beim Laden der Daten für ${channelName}`;
-                }
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
+            }
             }
 
-            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId) {
-                const videoThumbnail = new Image();
-                videoThumbnail.crossOrigin = 'anonymous';
-                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            // Funktion aufrufen und auf Abschluss warten
+            getLatestVideoId().then(() => {
+                var youtube_video_id = latestVideoId;
+                var video_thumbnail = document.createElement("IMG");
+                var corsAnywhereUrl = 'https://corsproxy.io/?';
+                videoSrc = 'https://youtube.com/watch?v=' + youtube_video_id;
+                var div = document.getElementById('link');
+                var p = document.createElement('p');
+                p.style.color = 'white';
+                p.style.fontFamily = 'Roboto';
+                p.textContent = videoSrc;
+                div.appendChild(p);
+                var src = corsAnywhereUrl + encodeURIComponent('https://img.youtube.com/vi/' + youtube_video_id + '/maxresdefault.jpg');
+                var video_thumbnail = new Image();
+                video_thumbnail.crossOrigin = 'anonymous';
+                video_thumbnail.src = src;
+                
 
-                videoThumbnail.onload = function () {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(videoThumbnail, 0, 0, canvas.width, 1080);
+                var bild1 = new Image();
+                var bild2 = new Image();
+                var bild3 = new Image();
+                bild1.crossOrigin = "anonymous";
+                bild2.crossOrigin = "anonymous";
+                bild3.crossOrigin = "anonymous";
+                // Funktion zum Laden eines Bildes
+                function ladeBild(src, callback) {
+                    var bild = new Image();
+                    bild.crossOrigin = "anonymous";
+                    bild.onload = function() {
+                    callback(bild);
+                    };
+                    bild.src = src;
+                }
 
-                    const profilePic = new Image();
-                    profilePic.crossOrigin = 'anonymous';
-                    profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
+                // Funktion zum Kombinieren von zwei Bildern auf dem Canvas
+                function kombiniereBilder(bild1, bild2, bild3) {
+                    // Zeichne das erste Bild auf das Canvas
+                    ctx.drawImage(bild1, 0, 0, canvas.width, canvas.height);
 
-                    profilePic.onload = function () {
-                        ctx.fillStyle = "#000000";
-                        ctx.fillRect(0, 1080, canvas.width, 800);
+                    // Zeichne das zweite Bild auf das Canvas
+                    ctx.drawImage(bild2, 0, 400, canvas.width, 608);    
 
-                        ctx.drawImage(profilePic, 30, 1040, 90, 90);
+                    // ctx.drawImage(bild3, 30, 1040, 80, 80);
 
-                        ctx.font = 'bold 50px Roboto';
-                        ctx.fillStyle = "#ffffff";
-                        const wrappedTitle = wrapText(videoTitle, 15); // Anpassung für Textumbruch
-                        let yPosition = 1130;
+                    var x_val = 30;
+                    var y_val = 1040;
+                    var width = 90;
+                    var height = 90;
 
-                        wrappedTitle.forEach(line => {
-                            ctx.fillText(line, 150, yPosition);
-                            yPosition += 60;
-                        });
+                    document.getElementById("loader").style.display="none"
+                    ctx.font = '400 45px Roboto';
+                    ctx.fillStyle = "#ffffff";
+                    const txt = insertNewlineEveryXCharacters(latestVideoTitle, 30);
+                    var x = 150;
+                    var y = 1085;
+                    var lelele = 0;
+                    var lineheight = 55;
+                    var lines = txt.split('\n');
+                    for (let i = 0; i < lines.length; i++) {
+                        ctx.fillText(lines[i], x, y + (i * lineheight));
+                        lelele = y + (i * lineheight);
+                    }
+                    ctx.font = '400 30px Roboto';
+                    ctx.fillStyle = "#b7b7b7";
+                    ctx.fillText(channelName, x, lelele + 40);
 
-                        ctx.font = '400 30px Roboto';
-                        ctx.fillStyle = "#b7b7b7";
-                        ctx.fillText(channelName, 150, yPosition + 10);
+                    function convertDuration(duration) {
+                        // Parse the ISO 8601 duration format
+                        const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
 
-                        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                        roundRect(ctx, 950, 940, 110, 50, 10);
-                        ctx.font = '400 35px Roboto';
-                        ctx.fillStyle = "#ffffff";
-                        ctx.fillText(convertDuration(duration), 961, 978);
+                        // Extract hours, minutes, and seconds
+                        const hours = (match[1] || 0) && parseInt(match[1]);
+                        const minutes = (match[2] || 0) && parseInt(match[2]);
+                        const seconds = (match[3] || 0) && parseInt(match[3]);
 
-                        const adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽";
-                        const adLines = adText.split('\n');
-                        const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
+                        // Format the duration as "mm:ss"
+                        const formattedDuration = [
+                            minutes ? String(minutes).padStart(2, '0') : '00',
+                            seconds ? String(seconds).padStart(2, '0') : '00',
+                        ].filter(Boolean).join(':');
+
+                        return formattedDuration;
+                    }
+
+                    cDur = convertDuration(duration);
+                    
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+
+                    // Draw a rounded rectangle
+                    roundRect(ctx, 950, 940, 110, 50, 10);
+
+                    x = 340;
+                    y = 1400;
+
+                    // Function to draw a rounded rectangle
+                    function roundRect(ctx, x, y, width, height, radius) {
+                        ctx.beginPath();
+                        ctx.moveTo(x + radius, y);
+                        ctx.arcTo(x + width, y, x + width, y + height, radius);
+                        ctx.arcTo(x + width, y + height, x, y + height, radius);
+                        ctx.arcTo(x, y + height, x, y, radius);
+                        ctx.arcTo(x, y, x + width, y, radius);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    ctx.font = '400 35px Roboto';
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillText(cDur, 961, 978);
+                    ctx.beginPath();
+
+                    x = 540;
+                    y = 1300;
+                    var fontsize = 40;
+                    var fontface = 'Roboto';
+                    var lineHeight = fontsize * 1.286;
+                    var textWidth = 0;
+                    var colorval = between(0,14);
+                    const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
+                    if (colorval == 0) {
                         gradient.addColorStop(0, "#43CBFF");
                         gradient.addColorStop(1, "#9708CC");
-
-                        ctx.fillStyle = gradient;
-                        ctx.font = 'bold 40px Roboto';
-                        yPosition = 1300;
-
-                        adLines.forEach(line => {
-                            const textWidth = ctx.measureText(line).width;
-                            roundRect(ctx, 540 - textWidth / 2, yPosition - 30, textWidth + 20, 50, 10);
-                            ctx.fillStyle = "#ffffff";
-                            ctx.fillText(line, 540, yPosition);
-                            yPosition += 60;
-                        });
-                    };
-                };
-            }
-
-            function convertDuration(duration) {
-                const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-                const hours = (match[1] || '0').slice(0, -1);
-                const minutes = (match[2] || '0').slice(0, -1);
-                const seconds = (match[3] || '0').slice(0, -1);
-
-                return (minutes ? String(minutes).padStart(2, '0') : '00') + ':' +
-                       (seconds ? String(seconds).padStart(2, '0') : '00');
-            }
-
-            function roundRect(ctx, x, y, width, height, radius) {
-                ctx.beginPath();
-                ctx.moveTo(x + radius, y);
-                ctx.arcTo(x + width, y, x + width, y + height, radius);
-                ctx.arcTo(x + width, y + height, x, y + height, radius);
-                ctx.arcTo(x, y + height, x, y, radius);
-                ctx.arcTo(x, y, x + width, y, radius);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            function wrapText(text, maxWords) {
-                const words = text.split(' ');
-                const lines = [];
-                let currentLine = '';
-
-                words.forEach(word => {
-                    const testLine = currentLine + word + ' ';
-                    if (testLine.split(' ').length > maxWords) {
-                        lines.push(currentLine.trim());
-                        currentLine = word + ' ';
-                    } else {
-                        currentLine = testLine;
                     }
+                    else if (colorval == 1) {
+                        gradient.addColorStop(0, "#FEB692");
+                        gradient.addColorStop(1, "#EA5455");
+                    }
+                    else if (colorval == 2) {
+                        gradient.addColorStop(0, "#CE9FFC");
+                        gradient.addColorStop(1, "#7367F0");
+                    }
+                    else if (colorval == 3) {
+                        gradient.addColorStop(0, "#81FBB8");
+                        gradient.addColorStop(1, "#28C76F");
+                    }
+                    else if (colorval == 4) {
+                        gradient.addColorStop(0, "#E2B0FF");
+                        gradient.addColorStop(1, "#9F44D3");
+                    }
+                    else if (colorval == 5) {
+                        gradient.addColorStop(0, "#F97794");
+                        gradient.addColorStop(1, "#623AA2");
+                    }
+                    else if (colorval == 6) {
+                        gradient.addColorStop(0, "#FCCF31");
+                        gradient.addColorStop(1, "#F55555");
+                    }
+                    else if (colorval == 7) {
+                        gradient.addColorStop(0, "#A0FE65");
+                        gradient.addColorStop(1, "#FA016D");
+                    }
+                    else if (colorval == 8) {
+                        gradient.addColorStop(0, "#2193b0");
+                        gradient.addColorStop(1, "#6dd5ed");
+                    }
+                    else if (colorval == 9) {
+                        gradient.addColorStop(0, "#cc2b5e");
+                        gradient.addColorStop(1, "#753a88");
+                    }
+                    else if (colorval == 10) {
+                        gradient.addColorStop(0, "#42275a");
+                        gradient.addColorStop(1, "#734b6d");
+                    }
+                    else if (colorval == 11) {
+                        gradient.addColorStop(0, "#56ab2f");
+                        gradient.addColorStop(1, "#a8e063");
+                    }
+                    else if (colorval == 12) {
+                        gradient.addColorStop(0, "#ff512f");
+                        gradient.addColorStop(1, "#dd2476");
+                    }
+                    else if (colorval == 13) {
+                        gradient.addColorStop(0, "#ffd89b");
+                        gradient.addColorStop(1, "#19547b");
+                    }
+                    else if (colorval == 14) {
+                        gradient.addColorStop(0, "#614385");
+                        gradient.addColorStop(1, "#516395");
+                    }
+                    
+                    var fontVal = between(0, 7)
+                    if(fontVal == 0){
+                        ctx.font = 'bold 40px "Roboto", sans-serif';
+                    }
+                    else if(fontVal == 2){
+                        ctx.font = 'bold 40px "Brush Script MT", sans-serif';
+                    }
+                    else if(fontVal == 3){
+                        ctx.font = '40px "Copperplate", sans-serif';
+                    }
+                    else if(fontVal == 4){
+                        ctx.font = 'bold 40px "Courier New", sans-serif';
+                    }
+                    else if(fontVal == 5){
+                        ctx.font = '40px "Brush Script MT", sans-serif';
+                    }
+                    else if(fontVal == 6){
+                        ctx.font = 'bold 40px "Comic Sans MS", sans-serif';
+                    }
+                    else if(fontVal == 7){
+                        ctx.font = 'bold 40px "Lucida Handwriting", sans-serif';
+                    }
+                    ctx.textAlign = "center";
+
+                    lines = adText.split('\n');
+                    for (let i = 0; i < lines.length; i++) {
+                        textWidth = ctx.measureText(lines[i]).width;
+                        ctx.fillStyle = gradient;
+                        roundRect(ctx, x - 10 - textWidth/2, y + (i * lineHeight) - lineHeight + 9, textWidth+20, lineHeight+6, 10);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillText(lines[i], x, y + (i * lineHeight));
+                    }
+                    
+                    ctx.arc(x_val + width / 2, y_val + height / 2, width / 2, 0, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.clip();
+
+                    // Zeichne das Bild im inneren Bereich des Kreises
+                    ctx.drawImage(bild3, x_val , y_val, width, height);
+
+                    
+                }
+
+                function insertNewlineEveryXCharacters(inputString, x) {
+                    let result = '';
+                    let e = 0;
+                    for (let i = 0; i < inputString.length; i++) {
+                        result += inputString[i];
+                        e = e + 1
+                        if ((e + 1) >= x && inputString[i] == " ") {
+                            e = 0
+                            result += '\n';
+                        }
+                    }
+                    return result;
+                }
+
+                function between(min, max) {  
+                    return Math.floor(
+                        Math.random() * (max - min) + min
+                    )
+                }
+
+                // Pfade zu den Bildern
+                var pfadBild1 = "background.jpg";
+                var pfadBild2 = src;
+                var pfadBild3 = corsAnywhereUrl + profilePicURL;
+
+                ladeBild(pfadBild1, function (bild1) {
+                    ladeBild(pfadBild2, function (bild2) {
+                        ladeBild(pfadBild3, function (bild3) {
+                            kombiniereBilder(bild1, video_thumbnail, bild3);
+                        });
+                    });
                 });
-                lines.push(currentLine.trim());
-                return lines;
-            }
+            });
+        };
+        function copyLink() {
+            navigator.clipboard.writeText(videoSrc);
+        }
+        function downloadCanvas() {
+            // Get the canvas data as a data URL
+            var dataUrl = canvas.toDataURL('image/png');
 
-            function copyLink() {
-                navigator.clipboard.writeText(videoSrc);
-            }
+            // Create a link element
+            var link = document.createElement('a');
 
-            function downloadCanvas() {
-                const dataUrl = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = 'thumbnail.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
+            // Set the href attribute of the link to the data URL
+            link.href = dataUrl;
+
+            // Set the download attribute of the link to specify the filename
+            link.download = 'thumbnail.png';
+
+            // Append the link to the document
+            document.body.appendChild(link);
+
+            // Trigger a click on the link to start the download
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+        }
         </script>
+        <br> <br>
     </div>
 </body>
 
