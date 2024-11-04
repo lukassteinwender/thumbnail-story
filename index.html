@@ -146,21 +146,21 @@
                             let yPosition = 1085;
 
                             titleLines.forEach(line => {
-                                ctx.fillText(line, 150, yPosition);
+                                ctx.fillText(line, 150, yPosition - 40);
                                 yPosition += 55;
                             });
 
                             // Kanalname
                             ctx.font = '400 30px Roboto';
                             ctx.fillStyle = "#b7b7b7";
-                            ctx.fillText(channelName, 150, yPosition + 10);
+                            ctx.fillText(channelName, 150, yPosition);
 
                             // Dauer
                             ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
                             roundRect(ctx, 950, 940, 110, 50, 10);
                             ctx.font = '400 35px Roboto';
                             ctx.fillStyle = "#ffffff";
-                            ctx.fillText(convertDuration(duration), 961, 978);
+                            ctx.fillText(convertDuration(duration), 961, 963);
 
                             // Zufälliger Farbverlauf und Schriftart für Ad-Text
                             let colorval = between(0, 14);
