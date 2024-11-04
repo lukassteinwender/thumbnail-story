@@ -60,7 +60,7 @@
             <div class="circle-btn" id="epicstunBtn" onclick="loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun')">
                 <img src="epicstun_profile.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('@Dreemtum', 'Dreemtum')">
+            <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('Dreemtum_Channel_ID', 'Dreemtum')">
                 <img src="dreemtum_profile.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <br><br>
@@ -80,11 +80,15 @@
             let canvas = document.getElementById('Canvas');
             let ctx = canvas.getContext('2d');
             let videoSrc = "";
-            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Dein API-Schlüssel
+            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
+
+            window.onload = function() {
+                loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun');
+            };
 
             async function loadChannelData(channelId, channelName) {
                 document.getElementById("loader").innerText = `Lade Daten für ${channelName}...`;
-                
+
                 try {
                     const videoResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
                     const videoData = await videoResponse.json();
@@ -116,7 +120,7 @@
                 videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvas leeren
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(videoThumbnail, 0, 0, canvas.width, 1080);
 
                     const profilePic = new Image();
@@ -124,15 +128,86 @@
                     profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
 
                     profilePic.onload = function () {
-                        ctx.drawImage(profilePic, 30, 1040, 80, 80);
+                        ctx.drawImage(profilePic, 30, 1040, 90, 90);
+
                         ctx.font = '400 45px Roboto';
                         ctx.fillStyle = "#ffffff";
-                        ctx.fillText(videoTitle, 150, 1085);
-                        ctx.fillStyle = "#b7b7b7";
+                        const wrappedTitle = wrapText(videoTitle, 30);
+                        let yPosition = 1085;
+
+                        wrappedTitle.forEach(line => {
+                            ctx.fillText(line, 150, yPosition);
+                            yPosition += 55;
+                        });
+
                         ctx.font = '400 30px Roboto';
-                        ctx.fillText(channelName, 150, 1130);
+                        ctx.fillStyle = "#b7b7b7";
+                        ctx.fillText(channelName, 150, yPosition);
+
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                        roundRect(ctx, 950, 940, 110, 50, 10);
+                        ctx.font = '400 35px Roboto';
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillText(convertDuration(duration), 961, 978);
+
+                        const adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽";
+                        const adLines = adText.split('\n');
+                        const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
+                        gradient.addColorStop(0, "#43CBFF");
+                        gradient.addColorStop(1, "#9708CC");
+
+                        ctx.fillStyle = gradient;
+                        ctx.font = 'bold 40px Roboto';
+                        yPosition = 1300;
+
+                        adLines.forEach(line => {
+                            const textWidth = ctx.measureText(line).width;
+                            roundRect(ctx, 540 - textWidth / 2, yPosition - 30, textWidth + 20, 50, 10);
+                            ctx.fillStyle = "#ffffff";
+                            ctx.fillText(line, 540, yPosition);
+                            yPosition += 60;
+                        });
                     };
                 };
+            }
+
+            function convertDuration(duration) {
+                const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+                const hours = (match[1] || '0').slice(0, -1);
+                const minutes = (match[2] || '0').slice(0, -1);
+                const seconds = (match[3] || '0').slice(0, -1);
+
+                return (minutes ? String(minutes).padStart(2, '0') : '00') + ':' +
+                       (seconds ? String(seconds).padStart(2, '0') : '00');
+            }
+
+            function roundRect(ctx, x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.arcTo(x + width, y, x + width, y + height, radius);
+                ctx.arcTo(x + width, y + height, x, y + height, radius);
+                ctx.arcTo(x, y + height, x, y, radius);
+                ctx.arcTo(x, y, x + width, y, radius);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function wrapText(text, maxWidth) {
+                const words = text.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                words.forEach(word => {
+                    const testLine = currentLine + word + ' ';
+                    if (ctx.measureText(testLine).width > maxWidth && currentLine !== '') {
+                        lines.push(currentLine.trim());
+                        currentLine = word + ' ';
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                lines.push(currentLine.trim());
+                return lines;
             }
 
             function copyLink() {
@@ -140,8 +215,8 @@
             }
 
             function downloadCanvas() {
-                var dataUrl = canvas.toDataURL('image/png');
-                var link = document.createElement('a');
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
                 link.href = dataUrl;
                 link.download = 'thumbnail.png';
                 document.body.appendChild(link);
