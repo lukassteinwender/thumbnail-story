@@ -101,7 +101,7 @@
                     document.getElementById("loader").innerText = '';
                     document.getElementById("link").innerHTML = `<p style='color:white;'>${videoSrc}</p>`;
 
-                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId);
+                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId, adText);
 
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
@@ -109,7 +109,7 @@
                 }
             }
 
-            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId) {
+            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adText) {
                 const videoThumbnail = new Image();
                 videoThumbnail.crossOrigin = 'anonymous';
                 videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
