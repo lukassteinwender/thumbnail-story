@@ -29,144 +29,164 @@
         min-height: 28px;
         transition: background-color .24s, box-shadow .24s;
     }
+
+    .circle-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: inline-block;
+        margin: 10px;
+        overflow: hidden;
+        border: 3px solid #fff;
+    }
+
+    #canvas-container {
+        position: relative;
+    }
 </style>
 
 <head>
     <title>Thumbnail Story</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://corsproxy.io/?https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 </head>
 
 <body>
-    <span id="loader" style="font-family: Roboto;"></span>
+    <span id="loader" style="font-family: Roboto; color: white;"></span>
     <div id="main">
-        <br><br>
-        <button id="btn" onclick="downloadCanvas()">Download</button>
-        <button id="btn" onclick="copyLink()">Copy Video-URL</button>
+        <!-- Channel selection buttons -->
+        <div class="circle-btn" id="epicstunBtn" onclick="loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun')">
+            <img src="epicstun_profile.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('Dreemtum_Channel_ID', 'Dreemtum')">
+            <img src="dreemtum_profile.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
         <br><br>
         <canvas id="Canvas" width="1080" height="1920"></canvas>
+        <br><br>
+        <button id="btn" onclick="downloadCanvas()"><b>Download</b></button>
+        <button id="btn" onclick="copyLink()"><b>Copy Video-URL</b></button>
+
         <br><br>
         <div id="link">
             <p style='color:white;'></p>
         </div>
+
         <script>
             let canvas = document.getElementById('Canvas');
             let ctx = canvas.getContext('2d');
             let videoSrc = "";
             const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
-            const channelId = 'UCpOjsfioBK7vgfT7AZXvx4A';
-            let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽";
-            let latestVideoId;
-            let latestVideoTitle;
-            let profilePicURL;
-            let channelName;
-            let duration;
 
-            window.onload = function () {
-                getLatestVideoData().then(() => {
-                    setupCanvas();
-                });
-            };
+            async function loadChannelData(channelId, channelName) {
+                document.getElementById("loader").innerText = `Lade Daten für ${channelName}...`;
 
-            async function getLatestVideoData() {
                 try {
                     const videoResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
                     const videoData = await videoResponse.json();
-                    
-                    latestVideoId = videoData.items[0].id.videoId;
-                    latestVideoTitle = videoData.items[0].snippet.title;
+                    const latestVideoId = videoData.items[0].id.videoId;
+                    const latestVideoTitle = videoData.items[0].snippet.title;
+
                     const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
                     const channelData = await channelResponse.json();
-
-                    profilePicURL = channelData.items[0].snippet.thumbnails.high.url;
-                    channelName = channelData.items[0].snippet.title;
+                    const profilePicURL = channelData.items[0].snippet.thumbnails.high.url;
+                    const channelName = channelData.items[0].snippet.title;
 
                     const videoDetailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${latestVideoId}&key=${apiKey}`);
                     const videoDetailsData = await videoDetailsResponse.json();
+                    const duration = videoDetailsData.items[0].contentDetails.duration;
 
-                    duration = videoDetailsData.items[0].contentDetails.duration;
                     videoSrc = 'https://youtube.com/watch?v=' + latestVideoId;
-                    document.getElementById('link').innerHTML = `<p style='color:white;'>${videoSrc}</p>`;
+                    document.getElementById("loader").innerText = '';
+                    document.getElementById("link").innerHTML = `<p style='color:white;'>${videoSrc}</p>`;
+
+                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId);
 
                 } catch (error) {
-                    console.error('Error fetching data from YouTube API:', error);
+                    console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
+                    document.getElementById("loader").innerText = `Fehler beim Laden der Daten für ${channelName}`;
                 }
             }
 
-            function setupCanvas() {
-                let background = new Image();
-                background.src = 'background.jpg'; // Background image path
-                let thumbnail = new Image();
-                thumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${latestVideoId}/maxresdefault.jpg`;
-                let profilePic = new Image();
-                profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
+            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId) {
+                const videoThumbnail = new Image();
+                videoThumbnail.crossOrigin = 'anonymous';
+                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-                background.onload = () => {
-                    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                    thumbnail.onload = () => {
-                        ctx.drawImage(thumbnail, 0, 400, canvas.width, 608);
-                        profilePic.onload = () => {
-                            renderOverlay(profilePic);
+                videoThumbnail.onload = function () {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Zeichne den Hintergrund und das Thumbnail-Bild auf dem Canvas
+                    let background = new Image();
+                    background.src = 'background.jpg';
+                    background.onload = function () {
+                        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(videoThumbnail, 0, 400, canvas.width, 608);
+
+                        // Lade das Profilbild und zeichne es im Canvas
+                        const profilePic = new Image();
+                        profilePic.crossOrigin = 'anonymous';
+                        profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
+                        profilePic.onload = function () {
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.arc(75, 1085, 45, 0, Math.PI * 2, true);
+                            ctx.closePath();
+                            ctx.clip();
+                            ctx.drawImage(profilePic, 30, 1040, 90, 90);
+                            ctx.restore();
+
+                            // Text und Details wie in der UR-Version formatieren
+                            ctx.font = 'bold 45px Roboto';
+                            ctx.fillStyle = "#ffffff";
+                            let titleLines = wrapText(videoTitle, 30);
+                            let yPosition = 1085;
+
+                            titleLines.forEach(line => {
+                                ctx.fillText(line, 150, yPosition);
+                                yPosition += 55;
+                            });
+
+                            ctx.font = '400 30px Roboto';
+                            ctx.fillStyle = "#b7b7b7";
+                            ctx.fillText(channelName, 150, yPosition + 10);
+
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                            roundRect(ctx, 950, 940, 110, 50, 10);
+                            ctx.font = '400 35px Roboto';
+                            ctx.fillStyle = "#ffffff";
+                            ctx.fillText(convertDuration(duration), 961, 978);
+
+                            // Werbetext und dekorative Schaltfläche mit Farbverlauf
+                            let gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
+                            gradient.addColorStop(0, "#43CBFF");
+                            gradient.addColorStop(1, "#9708CC");
+                            ctx.fillStyle = gradient;
+                            ctx.font = 'bold 40px Roboto';
+                            let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽";
+                            let adLines = adText.split('\n');
+                            yPosition = 1300;
+
+                            adLines.forEach(line => {
+                                let textWidth = ctx.measureText(line).width;
+                                roundRect(ctx, 540 - textWidth / 2, yPosition - 30, textWidth + 20, 50, 10);
+                                ctx.fillStyle = "#ffffff";
+                                ctx.fillText(line, 540, yPosition);
+                                yPosition += 60;
+                            });
                         };
                     };
                 };
             }
 
-            function renderOverlay(profilePic) {
-                ctx.drawImage(profilePic, 30, 1040, 90, 90);
-                ctx.font = 'bold 45px Roboto';
-                ctx.fillStyle = "#ffffff";
-                let titleLines = wrapText(ctx, latestVideoTitle, 30);
-                let yPosition = 1085;
-
-                titleLines.forEach(line => {
-                    ctx.fillText(line, 150, yPosition);
-                    yPosition += 55;
-                });
-
-                ctx.font = '400 30px Roboto';
-                ctx.fillStyle = "#b7b7b7";
-                ctx.fillText(channelName, 150, yPosition + 10);
-
-                ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                roundRect(ctx, 950, 940, 110, 50, 10);
-                ctx.font = '400 35px Roboto';
-                ctx.fillStyle = "#ffffff";
-                ctx.fillText(formatDuration(duration), 961, 978);
-
-                let gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
-                gradient.addColorStop(0, "#43CBFF");
-                gradient.addColorStop(1, "#9708CC");
-                ctx.fillStyle = gradient;
-                ctx.font = 'bold 40px Roboto';
-                let adLines = adText.split('\n');
-                yPosition = 1300;
-
-                adLines.forEach(line => {
-                    let textWidth = ctx.measureText(line).width;
-                    roundRect(ctx, 540 - textWidth / 2, yPosition - 30, textWidth + 20, 50, 10);
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillText(line, 540, yPosition);
-                    yPosition += 60;
-                });
-            }
-
-            function formatDuration(duration) {
-                const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-                const hours = (match[1] || '0').slice(0, -1);
-                const minutes = (match[2] || '0').slice(0, -1);
-                const seconds = (match[3] || '0').slice(0, -1);
-
-                return (minutes ? String(minutes).padStart(2, '0') : '00') + ':' + (seconds ? String(seconds).padStart(2, '0') : '00');
-            }
-
-            function wrapText(context, text, maxWidth) {
+            function wrapText(text, maxWidth) {
                 const words = text.split(' ');
                 const lines = [];
                 let currentLine = '';
 
                 words.forEach(word => {
-                    let testLine = currentLine + word + ' ';
-                    if (context.measureText(testLine).width > maxWidth && currentLine !== '') {
+                    const testLine = currentLine + word + ' ';
+                    if (ctx.measureText(testLine).width > maxWidth && currentLine !== '') {
                         lines.push(currentLine);
                         currentLine = word + ' ';
                     } else {
@@ -188,6 +208,14 @@
                 ctx.fill();
             }
 
+            function convertDuration(duration) {
+                const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+                const hours = (match[1] || '0').slice(0, -1);
+                const minutes = (match[2] || '0').slice(0, -1);
+                const seconds = (match[3] || '0').slice(0, -1);
+                return (minutes ? String(minutes).padStart(2, '0') : '00') + ':' + (seconds ? String(seconds).padStart(2, '0') : '00');
+            }
+
             function copyLink() {
                 navigator.clipboard.writeText(videoSrc);
             }
@@ -201,6 +229,11 @@
                 link.click();
                 document.body.removeChild(link);
             }
+
+            // Standardmäßiges Laden von EpicStun beim Seitenaufruf
+            window.onload = function() {
+                loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun');
+            };
         </script>
         <br><br>
     </div>
