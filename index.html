@@ -146,7 +146,7 @@
                             // Umbrüche einfügen, um die Breite zu maximieren
                             const maxTitleWidth = canvas.width - 200;
                             const titleLines = wrapText(ctx, videoTitle, maxTitleWidth);
-                            let yPosition = 1085;
+                            let yPosition = 1075;
 
                             titleLines.forEach(line => {
                                 ctx.fillText(line, 150, yPosition - 20);
@@ -163,7 +163,7 @@
                             roundRect(ctx, 950, 940, 110, 50, 10);
                             ctx.font = '400 35px Roboto';
                             ctx.fillStyle = "#ffffff";
-                            ctx.fillText(convertDuration(duration), 961, 952);
+                            ctx.fillText(convertDuration(duration), 960, 950);
 
                             // Zufälliger Farbverlauf und Schriftart für Ad-Text
                             let colorval = between(0, 14);
@@ -205,7 +205,7 @@
                             adLines.forEach(line => {
                                 let textWidth = ctx.measureText(line).width;
                                 ctx.fillStyle = gradient;
-                                roundRect(ctx, 540 - textWidth / 2, yPosition - 34, textWidth + 20, 50, 10);
+                                roundRect(ctx, 540 - textWidth / 2, yPosition - 34, textWidth + 30, 60, 10);
                                 ctx.fillStyle = "#ffffff";
                                 ctx.fillText(line, 550, yPosition - 4);
                                 yPosition += 60;
