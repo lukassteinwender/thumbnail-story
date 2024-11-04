@@ -96,12 +96,13 @@
                     const videoDetailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${latestVideoId}&key=${apiKey}`);
                     const videoDetailsData = await videoDetailsResponse.json();
                     const duration = videoDetailsData.items[0].contentDetails.duration;
+                    const adTextToWrite = adText;
 
                     videoSrc = 'https://youtube.com/watch?v=' + latestVideoId;
                     document.getElementById("loader").innerText = '';
                     document.getElementById("link").innerHTML = `<p style='color:white;'>${videoSrc}</p>`;
 
-                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId, adText);
+                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId, adTextToWrite);
 
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
@@ -109,8 +110,9 @@
                 }
             }
 
-            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adText) {
+            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adTextToWrite) {
                 const videoThumbnail = new Image();
+                const adText = adTextToWrite;
                 videoThumbnail.crossOrigin = 'anonymous';
                 videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
