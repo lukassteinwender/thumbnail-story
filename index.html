@@ -48,7 +48,7 @@
 
 <head>
     <title>Thumbnail Story</title>
-    <link rel="stylesheet" href="https://corsproxy.io/?https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 </head>
 
 <body>
@@ -116,14 +116,12 @@
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    // Zeichne den Hintergrund und das Thumbnail-Bild auf dem Canvas
                     let background = new Image();
                     background.src = 'background.jpg';
                     background.onload = function () {
                         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
                         ctx.drawImage(videoThumbnail, 0, 400, canvas.width, 608);
 
-                        // Lade das Profilbild und zeichne es im Canvas
                         const profilePic = new Image();
                         profilePic.crossOrigin = 'anonymous';
                         profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
@@ -139,7 +137,7 @@
                             // Text und Details wie in der UR-Version formatieren
                             ctx.font = 'bold 45px Roboto';
                             ctx.fillStyle = "#ffffff";
-                            let titleLines = wrapText(videoTitle, 30);
+                            let titleLines = wrapText(ctx, videoTitle, 30);
                             let yPosition = 1085;
 
                             titleLines.forEach(line => {
@@ -157,13 +155,13 @@
                             ctx.fillStyle = "#ffffff";
                             ctx.fillText(convertDuration(duration), 961, 978);
 
-                            // Werbetext und dekorative Schaltfläche mit Farbverlauf
+                            // Ad Text mit zentrierter Formatierung
                             let gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
-                            gradient.addColorStop(0, "#43CBFF");
-                            gradient.addColorStop(1, "#9708CC");
+                            gradient.addColorStop(0, "#FF4081");
+                            gradient.addColorStop(1, "#AA00FF");
                             ctx.fillStyle = gradient;
                             ctx.font = 'bold 40px Roboto';
-                            let adText = "Neues Video mit Katha\n🐶❤️\n🔽klick hier🔽";
+                            let adText = "Neues Video mit Katha\n🐶❤️\n🔽 klick hier 🔽";
                             let adLines = adText.split('\n');
                             yPosition = 1300;
 
@@ -179,15 +177,15 @@
                 };
             }
 
-            function wrapText(text, maxWidth) {
+            function wrapText(context, text, maxWidth) {
                 const words = text.split(' ');
                 const lines = [];
                 let currentLine = '';
 
                 words.forEach(word => {
-                    const testLine = currentLine + word + ' ';
-                    if (ctx.measureText(testLine).width > maxWidth && currentLine !== '') {
-                        lines.push(currentLine);
+                    let testLine = currentLine + word + ' ';
+                    if (context.measureText(testLine).width > maxWidth && currentLine !== '') {
+                        lines.push(currentLine.trim());
                         currentLine = word + ' ';
                     } else {
                         currentLine = testLine;
