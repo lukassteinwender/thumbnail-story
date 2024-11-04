@@ -53,16 +53,17 @@
 </head>
 
 <body>
-    <span id="loader" style="font-family: Roboto;"></span>
+    <span id="loader" style="font-family: Roboto; color: white;"></span>
     <div id="main">
         <div id="canvas-container">
             <!-- Buttons for selecting channels -->
             <div class="circle-btn" id="epicstunBtn" onclick="loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun')">
-                <img id="epicstunProfile" src="epicstun_profile.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="epicstun_profile.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('UC_dreemtum', 'Dreemtum')">
-                <img id="dreemtumProfile" src="dreemtum_profile.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('@Dreemtum', 'Dreemtum')">
+                <img src="dreemtum_profile.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
+            <br><br>
             <canvas id="Canvas" width="1080" height="1920"></canvas>
         </div>
 
@@ -79,10 +80,10 @@
             let canvas = document.getElementById('Canvas');
             let ctx = canvas.getContext('2d');
             let videoSrc = "";
-            
+            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Dein API-Schlüssel
+
             async function loadChannelData(channelId, channelName) {
-                const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ'; // Replace with your actual YouTube API key
-                document.getElementById("loader").innerText = `Loading data for ${channelName}...`;
+                document.getElementById("loader").innerText = `Lade Daten für ${channelName}...`;
                 
                 try {
                     const videoResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
@@ -104,8 +105,8 @@
                     drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId);
 
                 } catch (error) {
-                    console.error('Error fetching data from YouTube API:', error.message);
-                    document.getElementById("loader").innerText = `Failed to load data for ${channelName}`;
+                    console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
+                    document.getElementById("loader").innerText = `Fehler beim Laden der Daten für ${channelName}`;
                 }
             }
 
@@ -115,7 +116,7 @@
                 videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before drawing
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvas leeren
                     ctx.drawImage(videoThumbnail, 0, 0, canvas.width, 1080);
 
                     const profilePic = new Image();
@@ -127,6 +128,9 @@
                         ctx.font = '400 45px Roboto';
                         ctx.fillStyle = "#ffffff";
                         ctx.fillText(videoTitle, 150, 1085);
+                        ctx.fillStyle = "#b7b7b7";
+                        ctx.font = '400 30px Roboto';
+                        ctx.fillText(channelName, 150, 1130);
                     };
                 };
             }
