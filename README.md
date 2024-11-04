@@ -11,6 +11,7 @@
 - Automatically chooses last videos duration, thumbnail and title and also your profile picture and name. <br>
 - Editable, fancy textbox for your personalized ad-text <br>
 - 14 random textbox color-grids <br>
+- 7 random fonts <br>
 - 2 extra buttons to <br>
   &emsp; a) download the .png <br>
   &emsp; b) copy the video-URL to clipboard <br>
