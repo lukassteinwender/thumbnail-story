@@ -58,7 +58,7 @@
         <div class="circle-btn" id="epicstunBtn" onclick="loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun')">
             <img src="epicstun.jpg" alt="EpicStun" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-        <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('Dreemtum_Channel_ID', 'Dreemtum')">
+        <div class="circle-btn" id="dreemtumBtn" onclick="loadChannelData('@Dreemtum', 'Dreemtum')">
             <img src="dreemtum.jpg" alt="Dreemtum" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <br><br>
@@ -146,7 +146,7 @@
                             let yPosition = 1085;
 
                             titleLines.forEach(line => {
-                                ctx.fillText(line, 150, yPosition - 40);
+                                ctx.fillText(line, 150, yPosition - 20);
                                 yPosition += 55;
                             });
 
@@ -160,7 +160,7 @@
                             roundRect(ctx, 950, 940, 110, 50, 10);
                             ctx.font = '400 35px Roboto';
                             ctx.fillStyle = "#ffffff";
-                            ctx.fillText(convertDuration(duration), 961, 963);
+                            ctx.fillText(convertDuration(duration), 961, 958);
 
                             // Zufälliger Farbverlauf und Schriftart für Ad-Text
                             let colorval = between(0, 14);
@@ -202,9 +202,10 @@
 
                             adLines.forEach(line => {
                                 let textWidth = ctx.measureText(line).width;
+                                ctx.fillStyle = gradient;
                                 roundRect(ctx, 540 - textWidth / 2, yPosition - 30, textWidth + 20, 50, 10);
                                 ctx.fillStyle = "#ffffff";
-                                ctx.fillText(line, 540, yPosition);
+                                ctx.fillText(line, 545, yPosition);
                                 yPosition += 60;
                             });
                         };
