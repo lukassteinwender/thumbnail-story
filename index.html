@@ -113,7 +113,8 @@
             function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adTextToWrite) {
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
-                videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                videoThumbnail.crossOrigin = 'anonymous';
+                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/jA_G7S20r5A/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
