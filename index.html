@@ -114,6 +114,7 @@
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
                 videoThumbnail.crossOrigin = 'anonymous';
+                videoThumbnail.referrerPolicy = 'no-referrer';
                 videoThumbnail.src = 'https://img.youtube.com/vi/${videoId}/maxresdefault.jpg';
 
                 videoThumbnail.onload = function () {
