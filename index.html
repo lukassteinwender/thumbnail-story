@@ -114,7 +114,8 @@
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
                 videoThumbnail.crossOrigin = 'anonymous';
-                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/{videoId}/maxresdefault.jpg`;
+                print(videoId);
+                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
