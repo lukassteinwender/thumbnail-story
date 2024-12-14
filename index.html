@@ -113,7 +113,6 @@
             function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adTextToWrite) {
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
-                videoThumbnail.crossOrigin = 'anonymous';
                 videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
@@ -257,14 +256,16 @@
             }
 
             function downloadCanvas() {
-                let dataUrl = canvas.toDataURL('image/png');
-                let link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = 'thumbnail.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'thumbnail.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 'image/png');
             }
+
 
             function between(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
