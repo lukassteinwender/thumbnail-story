@@ -77,7 +77,7 @@
             let canvas = document.getElementById('Canvas');
             let ctx = canvas.getContext('2d');
             let videoSrc = "";
-            const apiKey = 'AIzaSyBWu7ByqOMONYL6w_pHZK1Q_i-TvRON4UQ';
+            const apiKey = 'YOUR_YOUTUBE_API_KEY'; // Replace with your YouTube API Key
 
             async function loadChannelData(channelId, channelName, adText) {
                 document.getElementById("loader").innerText = `Lade Daten für ${channelName}...`;
@@ -85,24 +85,43 @@
                 try {
                     const videoResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&type=video`);
                     const videoData = await videoResponse.json();
+
+                    if (!videoData.items || videoData.items.length === 0) {
+                        throw new Error('Keine Videos gefunden.');
+                    }
+
                     const latestVideoId = videoData.items[0].id.videoId;
                     const latestVideoTitle = videoData.items[0].snippet.title;
+                    const latestVideoThumbnail =
+                        videoData.items[0].snippet.thumbnails.maxres?.url ||
+                        videoData.items[0].snippet.thumbnails.high?.url ||
+                        videoData.items[0].snippet.thumbnails.medium?.url ||
+                        videoData.items[0].snippet.thumbnails.default?.url;
 
                     const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
                     const channelData = await channelResponse.json();
+
+                    if (!channelData.items || channelData.items.length === 0) {
+                        throw new Error('Kanalinformationen nicht gefunden.');
+                    }
+
                     const profilePicURL = channelData.items[0].snippet.thumbnails.high.url;
                     const channelName = channelData.items[0].snippet.title;
 
                     const videoDetailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${latestVideoId}&key=${apiKey}`);
                     const videoDetailsData = await videoDetailsResponse.json();
+
+                    if (!videoDetailsData.items || videoDetailsData.items.length === 0) {
+                        throw new Error('Videodetails nicht gefunden.');
+                    }
+
                     const duration = videoDetailsData.items[0].contentDetails.duration;
-                    const adTextToWrite = adText;
 
                     videoSrc = 'https://youtube.com/watch?v=' + latestVideoId;
                     document.getElementById("loader").innerText = '';
                     document.getElementById("link").innerHTML = `<p style='color:white;'>${videoSrc}</p>`;
 
-                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoId, adTextToWrite);
+                    drawCanvas(latestVideoTitle, profilePicURL, channelName, duration, latestVideoThumbnail, adText);
 
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Daten von YouTube API:', error.message);
@@ -110,11 +129,10 @@
                 }
             }
 
-            function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adTextToWrite) {
+            function drawCanvas(videoTitle, profilePicURL, channelName, duration, thumbnailUrl, adTextToWrite) {
                 const videoThumbnail = new Image();
-                const adText = adTextToWrite;
                 videoThumbnail.crossOrigin = 'anonymous';
-                videoThumbnail.src = `https://corsproxy.io/?https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                videoThumbnail.src = thumbnailUrl;
 
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -127,7 +145,7 @@
 
                         const profilePic = new Image();
                         profilePic.crossOrigin = 'anonymous';
-                        profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
+                        profilePic.src = profilePicURL;
                         profilePic.onload = function () {
                             ctx.save();
                             ctx.beginPath();
@@ -137,13 +155,12 @@
                             ctx.drawImage(profilePic, 30, 1040, 90, 90);
                             ctx.restore();
 
-                            // Video-Titel mit voller Breite formatieren
+                            // Video title
                             ctx.font = '400 45px Roboto';
                             ctx.fillStyle = "#ffffff";
                             ctx.textAlign = "left";
                             ctx.textBaseline = "top";
 
-                            // Umbrüche einfügen, um die Breite zu maximieren
                             const maxTitleWidth = canvas.width - 200;
                             const titleLines = wrapText(ctx, videoTitle, maxTitleWidth);
                             let yPosition = 1070;
@@ -153,53 +170,28 @@
                                 yPosition += 55;
                             });
 
-                            // Kanalname
                             ctx.font = '400 30px Roboto';
                             ctx.fillStyle = "#b7b7b7";
                             ctx.fillText(channelName, 150, yPosition - 22);
 
-                            // Dauer
+                            // Video duration
                             ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
                             roundRect(ctx, 950, 942, 110, 50, 10);
                             ctx.font = '400 35px Roboto';
                             ctx.fillStyle = "#ffffff";
                             ctx.fillText(convertDuration(duration), 960, 948);
 
-                            // Zufälliger Farbverlauf und Schriftart für Ad-Text
-                            let colorval = between(0, 14);
+                            // Ad text
                             const gradient = ctx.createLinearGradient(400, 1200, 700, 1550);
-                            switch (colorval) {
-                                case 0: gradient.addColorStop(0, "#43CBFF"); gradient.addColorStop(1, "#9708CC"); break;
-                                case 1: gradient.addColorStop(0, "#FEB692"); gradient.addColorStop(1, "#EA5455"); break;
-                                case 2: gradient.addColorStop(0, "#CE9FFC"); gradient.addColorStop(1, "#7367F0"); break;
-                                case 3: gradient.addColorStop(0, "#81FBB8"); gradient.addColorStop(1, "#28C76F"); break;
-                                case 4: gradient.addColorStop(0, "#E2B0FF"); gradient.addColorStop(1, "#9F44D3"); break;
-                                case 5: gradient.addColorStop(0, "#F97794"); gradient.addColorStop(1, "#623AA2"); break;
-                                case 6: gradient.addColorStop(0, "#FCCF31"); gradient.addColorStop(1, "#F55555"); break;
-                                case 7: gradient.addColorStop(0, "#A0FE65"); gradient.addColorStop(1, "#FA016D"); break;
-                                case 8: gradient.addColorStop(0, "#2193b0"); gradient.addColorStop(1, "#6dd5ed"); break;
-                                case 9: gradient.addColorStop(0, "#cc2b5e"); gradient.addColorStop(1, "#753a88"); break;
-                                case 10: gradient.addColorStop(0, "#42275a"); gradient.addColorStop(1, "#734b6d"); break;
-                                case 11: gradient.addColorStop(0, "#56ab2f"); gradient.addColorStop(1, "#a8e063"); break;
-                                case 12: gradient.addColorStop(0, "#ff512f"); gradient.addColorStop(1, "#dd2476"); break;
-                                case 13: gradient.addColorStop(0, "#ffd89b"); gradient.addColorStop(1, "#19547b"); break;
-                                case 14: gradient.addColorStop(0, "#614385"); gradient.addColorStop(1, "#516395"); break;
-                            }
+                            gradient.addColorStop(0, "#43CBFF");
+                            gradient.addColorStop(1, "#9708CC");
 
                             ctx.fillStyle = gradient;
-                            let fontVal = between(0, 7);
-                            switch (fontVal) {
-                                case 0: ctx.font = 'bold 40px "Roboto", sans-serif'; break;
-                                case 1: ctx.font = 'bold 40px "Brush Script MT", sans-serif'; break;
-                                case 2: ctx.font = '40px "Copperplate", sans-serif'; break;
-                                case 3: ctx.font = 'bold 40px "Courier New", sans-serif'; break;
-                                case 4: ctx.font = '40px "Brush Script MT", sans-serif'; break;
-                                case 5: ctx.font = 'bold 40px "Comic Sans MS", sans-serif'; break;
-                                case 6: ctx.font = 'bold 40px "Lucida Handwriting", sans-serif'; break;
-                            }
+                            ctx.font = 'bold 40px Roboto';
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
-                            let adLines = adText.split('\n');
+
+                            let adLines = adTextToWrite.split('\n');
                             yPosition = 1300;
 
                             adLines.forEach(line => {
@@ -266,11 +258,7 @@
                 document.body.removeChild(link);
             }
 
-            function between(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
-
-            window.onload = function() {
+            window.onload = function () {
                 loadChannelData('UCpOjsfioBK7vgfT7AZXvx4A', 'EpicStun', 'Neues Video mit Katha\n🐶❤️\n🔽 klick hier 🔽');
             };
         </script>
