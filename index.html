@@ -113,7 +113,8 @@
             function drawCanvas(videoTitle, profilePicURL, channelName, duration, videoId, adTextToWrite) {
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
-                videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                videoThumbnail.crossOrigin = 'anonymous';
+                videoThumbnail.src = `https://corsproxy.io/?url=https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -126,7 +127,7 @@
 
                         const profilePic = new Image();
                         profilePic.crossOrigin = 'anonymous';
-                        profilePic.src = `https://corsproxy.io/?${profilePicURL}`;
+                        profilePic.src = `https://corsproxy.io/?url=${profilePicURL}`;
                         profilePic.onload = function () {
                             ctx.save();
                             ctx.beginPath();
@@ -256,16 +257,14 @@
             }
 
             function downloadCanvas() {
-                canvas.toBlob(function(blob) {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'thumbnail.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }, 'image/png');
+                let dataUrl = canvas.toDataURL('image/png');
+                let link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'thumbnail.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
-
 
             function between(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
