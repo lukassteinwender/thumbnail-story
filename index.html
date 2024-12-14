@@ -90,7 +90,7 @@
 
                     const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`);
                     const channelData = await channelResponse.json();
-                    const profilePicURL = channelData.items[0].snippet.thumbnails.high.url;
+                    const profilePicURL = channelData.items[0].snippet.thumbnails.maxres.url;
                     const channelName = channelData.items[0].snippet.title;
 
                     const videoDetailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${latestVideoId}&key=${apiKey}`);
@@ -127,7 +127,7 @@
 
                         const profilePic = new Image();
                         profilePic.crossOrigin = 'anonymous';
-                        profilePic.src = 'profilePicURL';
+                        profilePic.src = `https://corsproxy.io/?{profilePicURL}`;
                         profilePic.onload = function () {
                             ctx.save();
                             ctx.beginPath();
