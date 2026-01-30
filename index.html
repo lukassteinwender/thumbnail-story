@@ -117,7 +117,7 @@
                 const videoThumbnail = new Image();
                 const adText = adTextToWrite;
                 videoThumbnail.crossOrigin = 'anonymous';
-                videoThumbnail.src = `https://corsproxy.io/?url=https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
                 videoThumbnail.onload = function () {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -130,7 +130,7 @@
 
                         const profilePic = new Image();
                         profilePic.crossOrigin = 'anonymous';
-                        profilePic.src = `https://corsproxy.io/?url=${profilePicURL}`;
+                        profilePic.src = `${profilePicURL}`;
                         profilePic.onload = function () {
                             ctx.save();
                             ctx.beginPath();
